@@ -9,7 +9,7 @@ import { validationResult } from 'express-validator';
             const { rows } = await ProductModel.getProducts();
     
             rows.forEach(row => {
-                const { id, titulo, descripcion, price, category_id, name_category } = row;
+                const { id, titulo, descripcion, price, category_id, image_url , name_category } = row;
     
                 if (!products[id]) {
                     products[id] = {
@@ -17,6 +17,7 @@ import { validationResult } from 'express-validator';
                         titulo,
                         descripcion,
                         price,
+                        image_url,
                         categories: []
                     };
                 }
@@ -80,7 +81,8 @@ import { validationResult } from 'express-validator';
                     id: p.id,
                     titulo: p.titulo,
                     descripcion: p.descripcion,
-                    price: p.price
+                    price: p.price,
+                    image_url: p.image_url
                 }))
             };
             

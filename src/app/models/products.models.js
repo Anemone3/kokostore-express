@@ -14,7 +14,7 @@ const executeQuery = async (query, params = []) => {
 // Obtener todos los productos
 const getProducts = async () => {
     const query = `
-        SELECT p.id, p.titulo, p.descripcion, p.price, c.id as category_id, c.name_category
+        SELECT p.id, p.titulo, p.descripcion, p.price, p.image_url, c.id as category_id, c.name_category
         FROM product p
         JOIN category c ON p.category = c.id
     `;
@@ -24,7 +24,7 @@ const getProducts = async () => {
 // Obtener producto por ID
 const getProductById = async (id) => {
     const query = `
-        SELECT p.id, p.titulo, p.descripcion, p.price, c.id as category_id, c.name_category
+        SELECT p.id, p.titulo, p.descripcion, p.price, p.image_url , c.id as category_id, c.name_category
         FROM product p
         JOIN category c ON p.category = c.id
         WHERE p.id = $1
@@ -35,7 +35,7 @@ const getProductById = async (id) => {
 // Obtener productos por ID de categoría
 const getProductByCategoryId = async (categoria) => {
     const query = `
-        SELECT p.id, p.titulo, p.descripcion, p.price, c.id as category_id, c.name_category
+        SELECT p.id, p.titulo, p.descripcion, p.price,p.image_url, c.id as category_id, c.name_category
         FROM product p
         JOIN category c ON p.category = c.id
         WHERE c.id = $1
