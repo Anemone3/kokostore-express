@@ -27,7 +27,7 @@ const getProducts = async (req, res) => {
           price,
           ingredientes,
           image_url,
-          categories: {
+          category: {
             category_id,
             name_category
           },
