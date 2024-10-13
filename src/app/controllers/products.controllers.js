@@ -7,7 +7,8 @@ const getProducts = async (req, res) => {
     const products = {};
     const { rows } = await ProductModel.getProducts();
 
-    rows.forEach((row) => {
+    // Usar reduce para crear el objeto de productos
+    rows.reduce((acc, row) => {
       const {
         id,
         titulo,
@@ -19,8 +20,8 @@ const getProducts = async (req, res) => {
         ingredientes,
       } = row;
 
-      if (!products[id]) {
-        products[id] = {
+      if (!acc[id]) {
+        acc[id] = {
           id,
           titulo,
           descripcion,
@@ -29,12 +30,12 @@ const getProducts = async (req, res) => {
           image_url,
           category: {
             category_id,
-            name_category
+            name_category,
           },
         };
       }
-
-    });
+      return acc;
+    }, products);
 
     const productsArray = Object.values(products);
 
@@ -43,7 +44,9 @@ const getProducts = async (req, res) => {
       .json({ rows: productsArray.length, products: productsArray });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Error al obtener los productos" });
+    res
+      .status(500)
+      .json({ error: "Error al obtener los productos", status: 500 });
   }
 };
 
@@ -60,13 +63,15 @@ const getProductById = async (req, res) => {
     if (!rows[0]) {
       return res
         .status(404)
-        .json({ error: `No se encuentra el producto solicitado` });
+        .json({ error: `No se encuentra el producto solicitado`, status: 500 });
     }
 
     res.status(200).json(rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Error al obtener los productos" });
+    res
+      .status(500)
+      .json({ error: "Error al obtener los productos", status: 500 });
   }
 };
 
@@ -78,7 +83,9 @@ const getProductCategoryId = async (req, res) => {
     const { rows } = await ProductModel.getProductByCategoryId(id);
 
     if (!rows.length) {
-      return res.status(404).json({ error: `No se encuentró la categoria` });
+      return res
+        .status(404)
+        .json({ error: `No se encuentró la categoria`, status: 500 });
     }
 
     const categoria = {
@@ -97,15 +104,43 @@ const getProductCategoryId = async (req, res) => {
     res.status(200).json(categoria);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Error al obtener los productos" });
+    res.status(500).json({
+      error: "No se pudo conseguir la lista de productos",
+      status: 500,
+    });
   }
 };
 
 // Paginacion de productos
-const getProductPaginated = () => {};
+const getProductPaginated = async (req, res) => {
+  try {
+    
+    const { page = 1, limit = 10 } = req.query;
+    const pageNum = (page);
+    const limitNum = parseInt(limit);
+    const offset = (pageNum - 1) * limitNum;
+
+    // Validar los números
+    if (isNaN(pageNum) || isNaN(limitNum) || pageNum < 1 || limitNum < 1) {
+      return res
+        .status(400)
+        .json({ error: "El número de pagina y limites deben ser positivos." });
+    }
+
+    const result = await ProductModel.getProductPaginated(limitNum, offset);
+
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Error en el paginado de productos", status: 500 });
+  }
+};
 
 export const productController = {
   getProducts,
   getProductById,
   getProductCategoryId,
+  getProductPaginated,
 };
