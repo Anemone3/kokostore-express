@@ -1,5 +1,5 @@
 
-import { supabase } from "../../config/connection.supabase"
+import { supabase } from "../../config/connection.supabase.js"
 
 export const verifyToken = async(req,res,next) => {
     try {
