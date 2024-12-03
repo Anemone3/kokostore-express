@@ -4,6 +4,7 @@ import cors from 'cors';
 import logger  from 'morgan';
 import ProductRoutes from './routes/products.routes.js'
 import CategoriaRoutes from './routes/categorias.routes.js'
+import UserRoutes from './routes/users.routes.js'
 import { errorHandler } from './app/middlewares/errorHandler.js';
 import helmet from 'helmet'
 
@@ -29,7 +30,7 @@ app.get('/',(req,res)=>{
 //Rutas
 app.use('/products',ProductRoutes);
 app.use('/categories',CategoriaRoutes)
-
+app.use('/users',UserRoutes)
 
 app.use((req,res)=>{
     res.status(404).send('Error 404, no hay contenido para este endpoint');

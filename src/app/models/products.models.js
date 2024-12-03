@@ -1,4 +1,3 @@
-import e from "cors";
 import { pool } from "../../config/connection.database.js";
 
 // Función auxiliar para ejecutar consultas
