@@ -1,9 +1,95 @@
 import { supabase } from "../../config/connection.supabase.js";
 import { getUser, createUser } from "../models/user.models.js";
-import sharp from "sharp";
 
-// Se requiere que se envie el id de departamento desde el frontend
-export const registerUser = async (req, res, next) => {
+// // Se requiere que se envie el id de departamento desde el frontend
+// export const registerUsers = async (req, res, next) => {
+//   const {
+//     firstname,
+//     lastname,
+//     correo,
+//     telefono,
+//     direccion,
+//     password,
+//     departamento,
+//   } = req.body;
+
+//   const file = req.file;
+
+//   console.log("Datos del usuario:", req.body);
+//   console.log("Archivo recibido:", file);
+//   if (
+//     !firstname ||
+//     !lastname ||
+//     !correo ||
+//     !telefono ||
+//     !password ||
+//     !direccion ||
+//     !departamento
+//   ) {
+//     return res.status(400).json({ error: "Todos los campos son requeridos." });
+//   }
+//   if (!file) {
+//     return res.status(400).json({ error: "La imagen es requerida." });
+//   }
+//   try {
+//     const filePath = `${firstname}/profile_${Date.now()}`;
+
+//     const { data: uploadData, error: uploadError } = await supabase.storage
+//       .from("profile-pictures")
+//       .upload(filePath, file.buffer, {
+//         cacheControl: "3600",
+//         upsert: false,
+//         contentType: file.mimetype,
+//       });
+
+//     if (uploadError) {
+//       return res
+//         .status(500)
+//         .json({ error: `Error subiendo la imagen: ${uploadError.message}` });
+//     }
+
+//     console.log(`Archivo en supabase correctamente:`, uploadData);
+
+//     const fotoUrl = supabase.storage
+//       .from("profile-pictures")
+//       .getPublicUrl(filePath).data.publicUrl;
+
+//     console.log("Antes de ser  creados en la base de datos:", fo);
+
+//     const { data, error } = await supabase.auth.signUp({
+//       email: correo,
+//       password: password,
+//       phone: telefono,
+//     });
+
+//     if (error) return res.status(400).json({ error: error.message });
+
+//     const { id } = data.user;
+
+//     const user = await createUser(
+//       firstname,
+//       lastname,
+//       correo,
+//       telefono,
+//       id,
+//       direccion,
+//       departamento,
+//       fotoUrl
+//     );
+
+//     console.log("Datos del usuario:", user);
+
+//     if (user.error) {
+//       return res.status(500).json({ error: user.error });
+//     }
+
+//     res.status(201).json({ user: data.user, foto: fotoUrl });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+export const registerUser = async (req, res) => {
   const {
     firstname,
     lastname,
@@ -12,11 +98,10 @@ export const registerUser = async (req, res, next) => {
     direccion,
     password,
     departamento,
-    profile
   } = req.body;
+  const file = req.file;
 
-
-
+  // Verifica datos requeridos
   if (
     !firstname ||
     !lastname ||
@@ -30,75 +115,75 @@ export const registerUser = async (req, res, next) => {
   }
 
   try {
-    const { data, error } = await supabase.auth.signUp({
+    // Registra al usuario en Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email: correo,
       password: password,
       phone: telefono,
     });
 
-    if (error) return res.status(400).json({ error: error.message });
+    if (authError) {
+      return res
+        .status(400)
+        .json({ error: `Error al registrar usuario: ${authError.message}` });
+    }
 
+    const user = authData.user;
 
-    let imageUrl = null;
+    if (!user) {
+      return res
+        .status(500)
+        .json({ error: "Error al autenticar el usuario tras el registro." });
+    }
 
-    // Subir imagen que envie el usuario, prueba.
-    if (profile) {
+    let fotoUrl = "https://s1.zerochan.net/Minato.Aqua.600.4258650.jpg";  // Asignar la URL predeterminada
 
-      
-      //Convertir Base64 a Buffer
-      const buffer = Buffer.from(profile, "base64");
+    if (file) {
+      const filePath = `${user.id}/profile_${Date.now()}`;
 
-      const processedImage = await sharp(buffer)
-        .resize(280)
-        .jpeg({ quality: 80 })
-        .toBuffer();
-
-      const filename = `user_${id}/${Date.now()}_profile.jpg`;
-
-      const { data: uploadData, error: uploadError } = supabase.storage
+      // Subir el archivo al bucket
+      const { error: uploadError } = await supabase.storage
         .from("profile-pictures")
-        .upload(filename, processedImage, {
+        .upload(filePath, file.buffer, {
           cacheControl: "3600",
           upsert: false,
-          contentType: "image/jpeg",
+          contentType: file.mimetype,
         });
 
       if (uploadError) {
         return res
           .status(500)
-          .json({ error: `Error subiendo la imagen: ${uploadError.message}` });
+          .json({ error: `Error al subir la imagen: ${uploadError.message}` });
       }
 
-      const { publicURL } = supabase.storage
+      // Obtener URL pública del archivo
+      fotoUrl = supabase.storage
         .from("profile-pictures")
-        .getPublicUrl(filename);
-      imageUrl = publicURL;
+        .getPublicUrl(filePath).data.publicUrl;
     }
 
-    const { id } = data.user;
-
-    const user = await createUser(
+    // Guardar el usuario en la base de datos
+    const userdb = await createUser(
       firstname,
       lastname,
       correo,
       telefono,
-      id,
+      user.id,
       direccion,
       departamento,
-      imageUrl
+      fotoUrl
     );
 
-    console.log("Datos del usuario:", user);
+    console.log("Datos en la base de datos", userdb);
 
-    if (user.error) {
-      return res.status(500).json({ error: user.error });
-    }
-
-    res.status(201).json({ user: data.user });
+    res
+      .status(201)
+      .json({ message: "Usuario registrado exitosamente", user: userdb });
   } catch (error) {
-    next(error);
+    next(error)
   }
 };
+
 
 export const loginUser = async (req, res, next) => {
   const { correo, password, telefono } = req.body;

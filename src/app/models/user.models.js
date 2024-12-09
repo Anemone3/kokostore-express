@@ -9,16 +9,14 @@ export const createUser = async (firstname, lastname, correo, telefono, supabase
 
         // Ejecutar la consulta en la base de datos
         const query = await pool.query(
-            "SELECT registrar_usuario_test($1, $2, $3, $4, $5, $6, $7, $8)",
+            "SELECT * FROM registrar_usuario($1, $2, $3, $4, $5, $6, $7, $8)",
             [firstname, lastname, correo, telefono, supabase_user_id, direccion, departamento,profile]
         );
 
         const { rows } = query;
 
-        // Verificar si la respuesta contiene datos
-        if (rows.length === 0) {
-            throw new Error('No se pudo crear el usuario.');
-        }
+        console.log("Datos del model: ", rows);
+  
 
         return rows[0];
     } catch (error) {
