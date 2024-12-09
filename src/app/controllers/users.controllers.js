@@ -12,10 +12,10 @@ export const registerUser = async (req, res, next) => {
     direccion,
     password,
     departamento,
-    image,
+    profile
   } = req.body;
 
-  console.log(image);
+
 
   if (
     !firstname ||
@@ -38,14 +38,15 @@ export const registerUser = async (req, res, next) => {
 
     if (error) return res.status(400).json({ error: error.message });
 
-    const { id } = data.user;
 
     let imageUrl = null;
 
     // Subir imagen que envie el usuario, prueba.
-    if (image) {
+    if (profile) {
+
+      
       //Convertir Base64 a Buffer
-      const buffer = Buffer.from(image, "base64");
+      const buffer = Buffer.from(profile, "base64");
 
       const processedImage = await sharp(buffer)
         .resize(280)
@@ -74,6 +75,8 @@ export const registerUser = async (req, res, next) => {
       imageUrl = publicURL;
     }
 
+    const { id } = data.user;
+
     const user = await createUser(
       firstname,
       lastname,
@@ -84,6 +87,8 @@ export const registerUser = async (req, res, next) => {
       departamento,
       imageUrl
     );
+
+    console.log("Datos del usuario:", user);
 
     if (user.error) {
       return res.status(500).json({ error: user.error });
