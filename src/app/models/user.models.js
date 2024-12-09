@@ -2,12 +2,11 @@ import { pool } from "../../config/connection.database.js";
 
 export const createUser = async (firstname, lastname, correo, telefono, supabase_user_id, direccion, departamento, profile) => {
     try {
-        // Verificar que los parámetros no estén vacíos
         if (!firstname || !lastname || !correo || !telefono || !supabase_user_id || !direccion || !departamento) {
             throw new Error('Todos los campos son requeridos.');
         }
 
-        // Ejecutar la consulta en la base de datos
+
         const query = await pool.query(
             "SELECT * FROM registrar_usuario($1, $2, $3, $4, $5, $6, $7, $8)",
             [firstname, lastname, correo, telefono, supabase_user_id, direccion, departamento,profile]
@@ -15,12 +14,14 @@ export const createUser = async (firstname, lastname, correo, telefono, supabase
 
         const { rows } = query;
 
-        console.log("Datos del model: ", rows);
+        if (rows.length === 0) {
+            return { error: "No se pudo registrar el usuario." };
+        }
   
 
         return rows[0];
     } catch (error) {
-         return { error: `Error interno al crear usuario, ${error.message ?? ""}` };
+        return { error: `Error interno al crear usuario, ${error.message ?? ""}` };
     }
 };
 

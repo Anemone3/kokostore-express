@@ -89,7 +89,7 @@ import { getUser, createUser } from "../models/user.models.js";
 //   }
 // };
 
-export const registerUser = async (req, res) => {
+export const registerUser = async (req, res,next) => {
   const {
     firstname,
     lastname,
@@ -101,7 +101,6 @@ export const registerUser = async (req, res) => {
   } = req.body;
   const file = req.file;
 
-  // Verifica datos requeridos
   if (
     !firstname ||
     !lastname ||
@@ -115,7 +114,17 @@ export const registerUser = async (req, res) => {
   }
 
   try {
-    // Registra al usuario en Supabase Auth
+    if (file) {
+      const validMimeTypes = ["image/jpeg", "image/png","image/webp"];
+      if (!validMimeTypes.includes(file.mimetype)) {
+        return res.status(400).json({
+          error:
+            "Formato de archivo no válido. Solo se permiten imágenes JPEG, PNG o GIF.",
+        });
+      }
+    }
+
+    // Registrar al usuario en Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: correo,
       password: password,
@@ -129,19 +138,17 @@ export const registerUser = async (req, res) => {
     }
 
     const user = authData.user;
-
     if (!user) {
       return res
         .status(500)
         .json({ error: "Error al autenticar el usuario tras el registro." });
     }
 
-    let fotoUrl = "https://s1.zerochan.net/Minato.Aqua.600.4258650.jpg";  // Asignar la URL predeterminada
+    let fotoUrl = "https://s1.zerochan.net/Minato.Aqua.600.4258650.jpg"; // Asignar URL predeterminada
 
     if (file) {
       const filePath = `${user.id}/profile_${Date.now()}`;
 
-      // Subir el archivo al bucket
       const { error: uploadError } = await supabase.storage
         .from("profile-pictures")
         .upload(filePath, file.buffer, {
@@ -151,15 +158,13 @@ export const registerUser = async (req, res) => {
         });
 
       if (uploadError) {
-        return res
-          .status(500)
-          .json({ error: `Error al subir la imagen: ${uploadError.message}` });
+        return res.status(500).json({
+          error: `Error al subir la imagen: ${uploadError.message}`,
+        });
       }
 
-      // Obtener URL pública del archivo
-      fotoUrl = supabase.storage
-        .from("profile-pictures")
-        .getPublicUrl(filePath).data.publicUrl;
+      fotoUrl = supabase.storage.from("profile-pictures").getPublicUrl(filePath)
+        .data.publicUrl;
     }
 
     // Guardar el usuario en la base de datos
@@ -176,14 +181,13 @@ export const registerUser = async (req, res) => {
 
     console.log("Datos en la base de datos", userdb);
 
-    res
+    return res
       .status(201)
       .json({ message: "Usuario registrado exitosamente", user: userdb });
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
-
 
 export const loginUser = async (req, res, next) => {
   const { correo, password, telefono } = req.body;
