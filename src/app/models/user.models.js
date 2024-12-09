@@ -32,7 +32,7 @@ export const getUser = async (id_supabase) => {
   try {
     // Ejecuta la consulta para obtener los datos del usuario
     const response = await pool.query(
-      "SELECT * FROM contacto c INNER JOIN usuario u ON c.id = u.id_contacto WHERE c.supabase_user_id = $1",
+      "SELECT * FROM contacto c INNER JOIN usuario u ON c.id = u.id_contacto INNER JOIN departamento d ON d.id = u.departamento WHERE c.supabase_user_id = $1",
       [id_supabase]
     );
     
