@@ -15,6 +15,8 @@ export const registerUser = async (req, res, next) => {
     image,
   } = req.body;
 
+  console.log(image);
+
   if (
     !firstname ||
     !lastname ||
