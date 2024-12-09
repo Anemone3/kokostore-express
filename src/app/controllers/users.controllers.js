@@ -5,8 +5,8 @@ import {getUser, createUser} from '../models/user.models.js'
 
 // Se requiere que se envie el id de departamento desde el frontend
 export const registerUser = async(req,res,next) =>{
-    const {firstname,lastname,correo,telefono,direccion, password} = req.body;
-    const departamento = 13;
+    const {firstname,lastname,correo,telefono,direccion, password, departamento} = req.body;
+    
     if (!firstname || !lastname || !correo || !telefono || !password || !direccion || !departamento) {
     return res.status(400).json({ error: "Todos los campos son requeridos." });
     }
