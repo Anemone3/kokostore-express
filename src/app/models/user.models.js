@@ -1,6 +1,6 @@
 import { pool } from "../../config/connection.database.js";
 
-export const createUser = async (firstname, lastname, correo, telefono, supabase_user_id, direccion, departamento) => {
+export const createUser = async (firstname, lastname, correo, telefono, supabase_user_id, direccion, departamento, profilePicture) => {
     try {
         // Verificar que los parámetros no estén vacíos
         if (!firstname || !lastname || !correo || !telefono || !supabase_user_id || !direccion || !departamento) {
@@ -9,8 +9,8 @@ export const createUser = async (firstname, lastname, correo, telefono, supabase
 
         // Ejecutar la consulta en la base de datos
         const query = await pool.query(
-            "SELECT registrar_usuario($1, $2, $3, $4, $5, $6, $7)",
-            [firstname, lastname, correo, telefono, supabase_user_id, direccion, departamento]
+            "SELECT registrar_usuario($1, $2, $3, $4, $5, $6, $7,$8)",
+            [firstname, lastname, correo, telefono, supabase_user_id, direccion, departamento,profilePicture]
         );
 
         const { rows } = query;
