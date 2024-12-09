@@ -1,4 +1,4 @@
-import { supabase } from `../../config/connection.supabase.js`;
+import { supabase } from "../../config/connection.supabase.js";
 import { getUser, createUser } from "../models/user.models.js";
 import sharp from 'sharp';
 
