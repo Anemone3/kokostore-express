@@ -1,6 +1,6 @@
 import { supabase } from "../../config/connection.supabase.js";
 import { getUser, createUser } from "../models/user.models.js";
-import sharp from 'sharp';
+import sharp from "sharp";
 
 // Se requiere que se envie el id de departamento desde el frontend
 export const registerUser = async (req, res, next) => {
@@ -42,7 +42,6 @@ export const registerUser = async (req, res, next) => {
 
     // Subir imagen que envie el usuario, prueba.
     if (image) {
-
       //Convertir Base64 a Buffer
       const buffer = Buffer.from(image, "base64");
 
@@ -61,12 +60,16 @@ export const registerUser = async (req, res, next) => {
           contentType: "image/jpeg",
         });
 
-        if(uploadError){
-        return res.status(500).json({ error: `Error subiendo la imagen: ${uploadError.message}` });
-        }
+      if (uploadError) {
+        return res
+          .status(500)
+          .json({ error: `Error subiendo la imagen: ${uploadError.message}` });
+      }
 
-        const { publicURL } = supabase.storage.from("profile-pictures").getPublicUrl(filename);
-        imageUrl = publicURL;
+      const { publicURL } = supabase.storage
+        .from("profile-pictures")
+        .getPublicUrl(filename);
+      imageUrl = publicURL;
     }
 
     const user = await createUser(
@@ -81,7 +84,7 @@ export const registerUser = async (req, res, next) => {
     );
 
     if (user.error) {
-      res.status(500).json({ error: user.error });
+      return res.status(500).json({ error: user.error });
     }
 
     res.status(201).json({ user: data.user });
