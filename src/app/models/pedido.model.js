@@ -36,3 +36,13 @@ export const getOrdersByUser = async (usuario_id) => {
 
     return query;
 }
+
+
+export const updateOrderTotalQuantity = async (cantidad,monto_total,pedido_id) =>{
+    const query = await executeQuery(
+        "UPDATE pedido SET cantidad_total = $1, monto_total = $2 WHERE id = $3 RETURNING *",
+        [cantidad, monto_total, pedido_id]
+    );
+
+    return query;
+}
