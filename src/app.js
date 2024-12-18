@@ -6,6 +6,7 @@ import multer from 'multer';
 import ProductRoutes from './routes/products.routes.js'
 import CategoriaRoutes from './routes/categorias.routes.js'
 import UserRoutes from './routes/users.routes.js'
+import  OrderRoutes from './routes/orders.routes.js'
 import { errorHandler } from './app/middlewares/errorHandler.js';
 import helmet from 'helmet'
 
@@ -36,7 +37,7 @@ app.post('/api/upload', upload.single('file'),(req,res)=>{
 app.use('/products',ProductRoutes);
 app.use('/categories',CategoriaRoutes)
 app.use('/users',UserRoutes)
-
+app.use('/order',OrderRoutes)
 app.use((req,res)=>{
     res.status(404).send('Error 404, no hay contenido para este endpoint');
 })

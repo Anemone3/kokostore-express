@@ -186,6 +186,9 @@ export const registerUser = async (req, res,next) => {
       .json({ message: "Usuario registrado exitosamente", user: userdb });
   } catch (error) {
     next(error);
+            res
+      .status(500)
+      .json({ error: "Error al registro de usuario" });
   }
 };
 
@@ -245,5 +248,8 @@ export const getUserById = async (req, res, next) => {
     res.status(200).json({ user });
   } catch (error) {
     next(error);
+        res
+      .status(500)
+      .json({ error: "Error al registro de usuario" });
   }
 };

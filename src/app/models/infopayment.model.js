@@ -1,4 +1,4 @@
-import { executeQuery } from "../helpers/poolQuery";
+import { executeQuery } from "../helpers/poolQuery.js";
 
 export const createInfoPayment = async (pedido_id, payment_method) => {
   const query = await executeQuery(
