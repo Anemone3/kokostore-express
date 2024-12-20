@@ -23,7 +23,7 @@ const getProducts = async () => {
 
 // Obtener producto por ID
 const getProductById = async (id) => {
-  const query = `SELECT p.id, p.titulo, p.descripcion, p.price, p.image_url , p.ingredientes, c.id as category_id, c.name_category FROM products p JOIN category c ON p.category = c.id  WHERE p.id = $1`;
+  const query = `SELECT p.id, p.titulo, p.descripcion, p.price, p.image_url , p.ingredientes, c.id as category_id, c.name_category, p.stock FROM products p JOIN category c ON p.category = c.id  WHERE p.id = $1`;
   return await executeQuery(query, [id]);
 };
 
