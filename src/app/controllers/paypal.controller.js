@@ -68,9 +68,19 @@ export const createPayment = async (req, res) => {
 };
 
 export const executePayment = (req, res, next) => {
-  const { id, total } = req.body;
+  const {id} = req.params;
+  const { total } = req.body;
   const { paymentId, PayerID } = req.query;
-  
+
+  if(!paymentId || !PayerID) {
+    return res.status(400).json({ message: "El paymentId y el PayerID son requeridos" });
+  }
+
+  if(!id || !total) {
+    return res.status(400).json({ message: "El id y el total son requeridos" });
+  }
+
+
   const execute_payment_json = {
     payer_id: PayerID,
     transactions: [
