@@ -33,8 +33,8 @@ export const createPayment = async (req, res) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: "http://return.url",
-      cancel_url: "http://cancel.url",
+      return_url: "http://localhost:5173/success",
+      cancel_url: "http://localhost:5173/cancel",
     },
     transactions: [
       {
