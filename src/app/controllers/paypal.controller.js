@@ -72,6 +72,8 @@ export const executePayment = (req, res, next) => {
   const { total } = req.body;
   const { paymentId, PayerID } = req.query;
 
+  console.log(`Hola desde el backend xd , ${id,total,paymentId,PayerID}`)
+
   if(!paymentId || !PayerID) {
     return res.status(400).json({ message: "El paymentId y el PayerID son requeridos" });
   }
