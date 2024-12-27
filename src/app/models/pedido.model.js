@@ -16,13 +16,11 @@ export const createOrderService = async (
       [usuario_id, metodo_pago, 0, 0]
     );
 
-    // Obtenemos la fila del pedido
     const order = orderResult.rows[0]; // Asegúrate de usar correctamente el objeto devuelto
 
     let montoTotal = 0;
     let cantidad = 0;
 
-    // Creamos el detalle del pedido
     for (const product of cart) {
       const { id, quantity, price, titulo } = product;
 
@@ -80,3 +78,17 @@ export const getOrdersByUser = async (usuario_id) => {
 
   return query;
 };
+
+
+export const confirmOrder = async (id) => {
+  const query = await executeQuery(
+    "UPDATE pedido SET descripcion = 'confirmado' WHERE id = $1  RETURNING *",
+    [id]
+  );
+
+  if (query.length === 0) {
+    throw new Error("No se encontro el pedido, o ya se encuentra confirmado.");
+  }
+
+  return query;
+}

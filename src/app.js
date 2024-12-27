@@ -7,6 +7,7 @@ import ProductRoutes from './routes/products.routes.js'
 import CategoriaRoutes from './routes/categorias.routes.js'
 import UserRoutes from './routes/users.routes.js'
 import  OrderRoutes from './routes/orders.routes.js'
+import PaymentRoutes from './routes/payment.routes.js'
 import { errorHandler } from './app/middlewares/errorHandler.js';
 import helmet from 'helmet'
 
@@ -38,6 +39,9 @@ app.use('/products',ProductRoutes);
 app.use('/categories',CategoriaRoutes)
 app.use('/users',UserRoutes)
 app.use('/order',OrderRoutes)
+app.use('/payments/', PaymentRoutes)
+
+
 app.use((req,res)=>{
     res.status(404).send('Error 404, no hay contenido para este endpoint');
 })

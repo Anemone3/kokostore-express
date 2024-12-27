@@ -12,7 +12,7 @@ export const createDetailOrderItem = async(pedido_id,product_id,quantity,unit_pr
 
 export const getDetailOrderItemsByOrder = async(pedido_id) =>{
     const query = await executeQuery(
-        "SELECT * FROM detalle_pedido WHERE pedido_id = $1",
+        "SELECT  product_id,description, quantity, unit_price,descuento ,total, cantidad_total,monto_total FROM detalle_pedido dp INNER JOIN pedido p ON dp.pedido_id = p.id WHERE pedido_id = $1",
         [pedido_id]
     );
 
