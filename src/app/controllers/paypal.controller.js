@@ -78,7 +78,7 @@ export const executePayment = (req, res, next) => {
     return res.status(400).json({ message: "El paymentId y el PayerID son requeridos" });
   }
 
-  if(!id || !total) {
+  if(!id) {
     return res.status(400).json({ message: "El id y el total son requeridos" });
   }
 
