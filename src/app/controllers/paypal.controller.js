@@ -69,8 +69,7 @@ export const createPayment = async (req, res) => {
 
 export const executePayment = (req, res, next) => {
   const {id} = req.params;
-  const { total } = req.body;
-  const { paymentId, PayerID } = req.query;
+  const { paymentId, PayerID,total} = req.query;
 
   console.log(`Hola desde el backend xd , ${id}, total: ${total}, paymentId: ${paymentId}, payerdId = ${PayerID}`)
 
@@ -79,9 +78,12 @@ export const executePayment = (req, res, next) => {
   }
 
   if(!id) {
-    return res.status(400).json({ message: "El id y el total son requeridos" });
+    return res.status(400).json({ message: "El id son requeridos" });
   }
 
+  if(!total){
+    return res.status(400).json({ message: "El total son requeridos" });
+  }
 
   const execute_payment_json = {
     payer_id: PayerID,
@@ -102,7 +104,7 @@ export const executePayment = (req, res, next) => {
       if (error) {
         return res
           .status(500)
-          .json({ error: error.message ?? "Error en el pago" });
+          .json({ error: error });
       } else {
         try {
           await confirmOrder(id);
