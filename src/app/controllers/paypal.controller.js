@@ -2,6 +2,11 @@ import paypal from "../../config/connection.paypal.js";
 import { getDetailOrderItemsByOrder } from "../models/detailoder.model.js";
 import { confirmOrder } from "../models/pedido.model.js";
 
+
+const URL_APP = process.env.URL_APP || "http://localhost:5173";
+console.log(`app page: ${URL_APP}`);
+
+
 export const createPayment = async (req, res) => {
   const { id } = req.body;
 
@@ -33,8 +38,8 @@ export const createPayment = async (req, res) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: "http://localhost:5173/success",
-      cancel_url: "http://localhost:5173/cancel",
+      return_url: `${URL_APP}/success`,
+      cancel_url: `${URL_APP}/cancel`,
     },
     transactions: [
       {
